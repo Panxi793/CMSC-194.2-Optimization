@@ -1,0 +1,33 @@
+Preprocessing script
+
+Based on the flowchart and your code, I can see your implementation follows the algorithm depicted in the diagram:
+
+1. **Read next image and tags**: Your code reads images and labels from the dataset directory in the `preprocess_dataset` function.
+
+2. **Marking discarded objects**: You implement the object selection based on movement in the first phase of processing.
+
+3. **Check for selectable objects**: Your implementation determines which objects to process based on movement criteria.
+
+4. **Select object and define region**: You create regions around selected objects using `create_region_around_object`.
+
+5. **For each object in the image, check % match**:
+   - If 100% match: labeled as unselectable
+   - If >50% match: labeled but keeps selectable status
+   - If <50% match: object not tagged and deleted from region (blurred)
+
+6. **Save region as image and tag list**: You save the processed regions as new images with their corresponding labels.
+
+Your implementation includes additional features not explicitly shown in the flowchart:
+- Key frame handling for better object tracking
+- Coordinate transformation between original image and cropped regions
+- IoU calculation for object matching
+
+The core algorithm logic matches the flowchart, with the preprocessing script implementing:
+- Object movement detection 
+- Region creation around selected objects
+- Object classification based on overlap percentage (100%, >50%, <50%)
+- Region saving with transformed coordinates
+
+One difference I notice is that your code doesn't explicitly store "Labels from the previous image" in a database as shown in the flowchart's green cylinder, but instead keeps track of previous objects in memory through the `previous_objects` variable.
+
+Would you like me to suggest any specific adjustments to make your implementation match the flowchart more precisely?
