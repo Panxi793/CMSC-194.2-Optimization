@@ -44,3 +44,6 @@ This study follows a two-phase pre-processing pipeline adapted specifically for 
    - Objects less than 50% inside → **blur** or ignore.
 
 3. Save cropped frames and YOLO annotations.
+
+Script:
+python preprocessing_script.py --dataset_path "C:\Users\Anton\Desktop\UP\3rd Yr 2nd Sem\CMSC-194.2-Optimization\drone_dataset\dataset3" --output_path "C:\Users\Anton\Desktop\UP\3rd Yr 2nd Sem\CMSC-194.2-Optimization\Preprocessed_dataset\dataset3" --region_width 640 --region_height 360 --discrimination_distance 5 --min_area_percentage 0.5 --key_frame_interval 7

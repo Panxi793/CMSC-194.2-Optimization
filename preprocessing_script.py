@@ -174,6 +174,75 @@ def save_yolo_labels(objects, output_file, img_width, img_height):
             f.write(f"{class_id} {x_norm:.6f} {y_norm:.6f} {w_norm:.6f} {h_norm:.6f}\n")
 
 
+def create_visualization(image, objects, selected_objects, region_coords_list, min_area_percentage):
+    """
+    Create visualization showing how regions are generated from original image.
+    
+    Args:
+        image: Original image
+        objects: All objects in the image
+        selected_objects: Objects selected for region generation
+        region_coords_list: List of region coordinates (x, y, w, h)
+        min_area_percentage: Minimum percentage for an object to be included fully
+        
+    Returns:
+        Visualization image
+    """
+    # Create a copy of the image for visualization
+    vis_image = image.copy()
+    
+    # Draw all regions (green boxes)
+    for region_coords in region_coords_list:
+        x, y, w, h = region_coords
+        cv2.rectangle(vis_image, (x, y), (x + w, y + h), (0, 255, 0), 2)  # Green box
+    
+    # Draw all objects based on their status
+    for obj in objects:
+        class_id, x, y, w, h = obj
+        x1, y1 = int(x - w/2), int(y - h/2)
+        x2, y2 = int(x + w/2), int(y + h/2)
+        
+        # Determine if this object is a selected object that generates a region
+        is_region_generator = False
+        for sel_obj in selected_objects:
+            if sel_obj[1] == x and sel_obj[2] == y:
+                is_region_generator = True
+                break
+                
+        # Determine overlap with regions to check if it's partially visible
+        is_partially_visible = False
+        is_training_roi = False
+        
+        for region_coords in region_coords_list:
+            overlap = calculate_overlap_percentage([x, y, w, h], region_coords)
+            if 0 < overlap < min_area_percentage:
+                is_partially_visible = True
+                break
+            elif overlap >= min_area_percentage and not is_region_generator:
+                is_training_roi = True
+        
+        # Draw bounding box with appropriate color
+        if is_region_generator:
+            color = (0, 0, 255)  # Red for region generators
+            thickness = 2
+        elif is_training_roi:
+            color = (255, 0, 0)  # Blue for included ROIs
+            thickness = 2
+        elif is_partially_visible:
+            color = (255, 255, 255)  # White for partially visible (blurred)
+            thickness = 1
+        else:
+            continue  # Skip objects that don't fall into any category
+            
+        cv2.rectangle(vis_image, (x1, y1), (x2, y2), color, thickness)
+        
+        # Add label
+        label = f"Class {class_id}"
+        cv2.putText(vis_image, label, (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
+    
+    return vis_image
+
+
 def preprocess_dataset(dataset_path, output_path, config):
     """Main preprocessing function."""
     # Configuration
@@ -186,6 +255,7 @@ def preprocess_dataset(dataset_path, output_path, config):
     os.makedirs(output_path, exist_ok=True)
     os.makedirs(os.path.join(output_path, 'images'), exist_ok=True)
     os.makedirs(os.path.join(output_path, 'labels'), exist_ok=True)
+    os.makedirs(os.path.join(output_path, 'visualization'), exist_ok=True)
     
     # Get image files sorted by frame number
     image_files = sorted([f for f in os.listdir(os.path.join(dataset_path, 'images')) 
@@ -231,12 +301,18 @@ def preprocess_dataset(dataset_path, output_path, config):
         # Phase 2: Crop regions and relabel
         selectable_objects = set(range(len(objects)))  # Initially, all objects are selectable
         
+        # Keep track of all regions for visualization
+        all_region_coords = []
+        
         for obj_idx, obj in enumerate(selected_objects):
             obj_pos = [obj[1], obj[2], obj[3], obj[4]]  # x, y, width, height
             
             # Create region around object
             region, region_coords = create_region_around_object(obj_pos, image, region_size)
             region_height, region_width = region.shape[:2]
+            
+            # Store region coordinates for visualization
+            all_region_coords.append(region_coords)
             
             # Process all objects within the region
             region_objects = []
@@ -273,12 +349,20 @@ def preprocess_dataset(dataset_path, output_path, config):
                 save_yolo_labels(region_objects, region_label_path, region_width, region_height)
                 total_regions_created += 1
         
+        # Create and save visualization
+        if all_region_coords:
+            visualization = create_visualization(image, objects, selected_objects, all_region_coords, min_area_percentage)
+            vis_filename = f"visualization_{os.path.splitext(img_file)[0]}.jpg"
+            vis_path = os.path.join(output_path, 'visualization', vis_filename)
+            cv2.imwrite(vis_path, visualization)
+        
         previous_objects = objects
     
     print(f"\nPreprocessing complete!")
     print(f"Total frames processed: {frame_count}")
     print(f"Total regions created: {total_regions_created}")
     print(f"Results saved to: {output_path}")
+    print(f"Visualizations saved to: {os.path.join(output_path, 'visualization')}")
 
 
 def main():

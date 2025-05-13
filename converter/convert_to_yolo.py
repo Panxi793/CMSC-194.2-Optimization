@@ -2,9 +2,9 @@ import os
 import csv
 
 # Set image size (replace with your actual image resolution)
-IMAGE_WIDTH = 2688
-IMAGE_HEIGHT = 1512
-input_file = "uav0000143_02250_v.txt"
+IMAGE_WIDTH = 1904
+IMAGE_HEIGHT = 1071
+input_file = "uav0000342_04692_v.txt"
 output_dir = "yolo_labels"
 
 os.makedirs(output_dir, exist_ok=True)
