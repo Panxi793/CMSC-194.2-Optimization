@@ -2,10 +2,13 @@ import os
 import csv
 
 # Set image size (replace with your actual image resolution)
-IMAGE_WIDTH = 1904
-IMAGE_HEIGHT = 1071
-input_file = "uav0000342_04692_v.txt"
-output_dir = "yolo_labels"
+IMAGE_WIDTH = 2688
+IMAGE_HEIGHT = 1512
+input_file = "uav0000143_02250_v.txt"
+
+# Create output directory based on the input file name
+base_name = os.path.splitext(os.path.basename(input_file))[0]  # Get the base name without extension
+output_dir = os.path.join("yolo_labels", base_name)  # Create output directory path
 
 os.makedirs(output_dir, exist_ok=True)
 

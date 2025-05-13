@@ -28,6 +28,30 @@ The core algorithm logic matches the flowchart, with the preprocessing script im
 - Object classification based on overlap percentage (100%, >50%, <50%)
 - Region saving with transformed coordinates
 
-One difference I notice is that your code doesn't explicitly store "Labels from the previous image" in a database as shown in the flowchart's green cylinder, but instead keeps track of previous objects in memory through the `previous_objects` variable.
+0: pedestrian
+1: people
+2: bicycle
+3: car
+4: van
+5: truck
+6: tricycle
+7: awning-tricycle
+8: bus
+9: motor
 
-Would you like me to suggest any specific adjustments to make your implementation match the flowchart more precisely?
+**Preprocessing Statistics:**
+Dataset 1:
+Total frames processed: 261
+Total regions created: 7858
+
+Dataset 2:
+Total frames processed: 616
+Total regions created: 2805
+
+Dataset 3:
+Total frames processed: 277
+Total regions created: 2972
+
+Dataset 4:
+Total frames processed: 196
+Total regions created: 2043
