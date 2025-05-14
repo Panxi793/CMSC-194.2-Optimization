@@ -1,0 +1,28 @@
+# YOLOv5 Configuration for Model A (Original VisDrone2019 dataset)
+
+# Dataset paths
+path: ../datasets/drone_dataset
+train: dataset1/images,dataset2/images,dataset3/images,dataset4/images
+val: dataset1/images,dataset2/images,dataset3/images,dataset4/images  # Using original images for validation
+test:  # Not using test set for this comparison
+
+# Number of classes
+nc: 11 # VisDrone classes (0-10)
+
+# Class names
+names: ['pedestrian', 'people', 'bicycle', 'car', 'van', 'truck', 'tricycle', 'awning-tricycle', 'bus', 'motor', 'others']
+
+# Training hyperparameters
+epochs: 30
+batch-size: 16  # Setting explicit batch size instead of auto
+img-size: [640, 640]
+optimizer: SGD  # SGD, Adam, AdamW
+lr0: 0.01  # initial learning rate
+lrf: 0.01  # final learning rate
+momentum: 0.937
+weight-decay: 0.0005
+warmup-epochs: 3.0
+warmup-momentum: 0.8
+warmup-bias-lr: 0.1
+box: 0.05
+cls: 0.5 

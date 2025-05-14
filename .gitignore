@@ -46,7 +46,6 @@ ENV/
 
 # Dataset directories
 VisDrone2019-VID-train-subset/
-VisDrone2019-VID-test-subset/
 drone_dataset/
 Preprocessed_dataset/
 
